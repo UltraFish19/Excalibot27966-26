@@ -15,22 +15,9 @@ public class ExcalibotTeleOP extends OpMode {
 
     Framework Bot = new Framework();
 
-    float Y;
-    float X;
-    float LeftPower;
-    float RightPower;
-    double Max;
 
     final float SlowSpeed = 0.35f;
 
-    final double ServoMin = 0.8;
-    final double ServoMax = 1;
-
-
-    float ArmSpeed = 0.1f;
-    double ClawSpeed = 0.0025;
-    double ExtenderSpeed = 0.5; // Unused
-    boolean ArmHoldMode = false; // Unused
 
 
     ElapsedTime Time;
@@ -112,117 +99,12 @@ public class ExcalibotTeleOP extends OpMode {
 
 
 
-
-
-
-/*
-    private void OLDDriveTrainLoop(){ //Drive train
- 
-     Y = -gamepad1.left_stick_y;  //Drive train 
-    X = gamepad1.right_stick_x;
-    LeftPower = Y + X;
-    RightPower = Y - X;
-    Max = JavaUtil.maxOfList(JavaUtil.createListWith(Math.abs(LeftPower), Math.abs(RightPower)));
-    if (Max >= 1) {
-      LeftPower = (float) (LeftPower / Max);
-      RightPower = (float) (RightPower / Max);
-    }
-    Bot.LeftMotor.setPower(LeftPower);
-    Bot.RightMotor.setPower(RightPower);
-  
-}
-
-*/
-
-    private void ArmControlLoop() {
-
-
-        if (gamepad1.left_trigger > 0.1f) {
-            Bot.ArmMotor1.setPower(ArmSpeed * gamepad1.left_trigger);
-            Bot.ArmMotor2.setPower(ArmSpeed * gamepad1.left_trigger);
-        } else if (gamepad1.right_trigger > 0.1f) { // Go Up
-
-
-
-            Bot.ArmMotor1.setPower(-(ArmSpeed * gamepad1.right_trigger));
-            Bot.ArmMotor2.setPower(-(ArmSpeed * gamepad1.right_trigger));
-        } else {
-            Bot.ArmMotor1.setPower(0);
-            Bot.ArmMotor2.setPower(0);
-
-        }
-
-        if (gamepad1.start) { // Increase Power
-            ArmSpeed = 0.35f;
-        } else {
-            ArmSpeed = 0.1f;
-        }
-
-
-    }
-
-
-
-    /* public void encoder(){
-     *    armTarget = armPos;
-     *    armMotor1.setTargetPosition((int)armTarget);
-     *    armMotor2.setTargetPosition((int)armTarget);
-     *    armMotor1.setPower(0.5);
-     *    armMotor2.setPower(0.5)
-     *    armMotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-     *    armMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-     *}
-     *
-     */
-
-
-//    private void ExtenderLoop() {
-//
-//        if (gamepad1.dpad_up) {
-//            Bot.ExtenderPosition += 1;
-//            Bot.Extender.setPower(ExtenderSpeed);
-//        } else if (gamepad1.dpad_down) {
-//            Bot.ExtenderPosition -= 1;
-//            Bot.Extender.setPower(-ExtenderSpeed);
-//        } else {
-//
-//            Bot.Extender.setPower(0);
-//        }
-//
-//    }
-
-
-    private void ClawControl() {
-
-
-        if (gamepad1.left_bumper) { // Open
-
-            Bot.Intake.setPosition(Bot.ClawPosition);
-            Bot.ClawPosition = Math.max(Bot.ClawPosition += -ClawSpeed, ServoMin);
-
-
-        } else if (gamepad1.right_bumper) { //Close
-
-            Bot.Intake.setPosition(Bot.ClawPosition);
-            Bot.ClawPosition = Math.min(Bot.ClawPosition += ClawSpeed, ServoMax);
-
-        } else { // Neutral (Hopefully)
-
-            Bot.Intake.setPosition(Bot.ClawPosition);
-
-
-        }
-    }
-
-
     public void loop() {
 
         DriveTrainLoop();
-        ArmControlLoop();
-        ClawControl();
        // ExtenderLoop();
 
-        if (Time.milliseconds() >= 250.0) {
+        if (Time.milliseconds() >= 250.0) { // Telemetry log every 250 millisecond to not overflow
             Bot.UpdateData();
             Time.reset();
         }

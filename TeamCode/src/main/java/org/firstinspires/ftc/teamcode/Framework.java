@@ -22,22 +22,16 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles; /
 public class Framework { // Main class for everything
 
 
-    public DcMotor ArmMotor1;
-    public DcMotor ArmMotor2;
-    public CRServo Extender;
-    public IMU IMUSensor;
+   public IMU IMUSensor;
 
-    public Servo Intake;
 
 
     public DcMotor FrontLeftMotor;
     public DcMotor FrontRightMotor;
     public DcMotor BackLeftMotor;
     public DcMotor BackRightMotor;
-
     public HardwareMap Hardware;
-    public double ClawPosition; // The position from 0 degrees
-    public int ExtenderPosition;
+
     IMU.Parameters IMUParameters;
     Telemetry BotConsole;
 
@@ -81,16 +75,7 @@ public class Framework { // Main class for everything
 
         this.Hardware = Hardware;
         BotConsole = Telemetry;
-        ClawPosition = 0.8;
-        ExtenderPosition = 0;
 
-        ArmMotor1 = Hardware.get(DcMotor.class, "ArmMotor1"); //Init Arm motors
-        ArmMotor2 = Hardware.get(DcMotor.class, "ArmMotor2");
-
-        Intake = Hardware.get(Servo.class, "intake"); //Claw
-        Intake.setPosition(0.8);
-
-        Extender = Hardware.get(CRServo.class, "Extender");
 
         FrontLeftMotor = Hardware.get(DcMotor.class, "FrontLeftMotor");
         FrontRightMotor = Hardware.get(DcMotor.class, "FrontRightMotor");
@@ -104,8 +89,7 @@ public class Framework { // Main class for everything
         BackLeftMotor.setDirection(DcMotor.Direction.REVERSE);
         BackRightMotor.setDirection(DcMotor.Direction.FORWARD);
 
-        ArmMotor1.setDirection(DcMotor.Direction.FORWARD);
-        ArmMotor2.setDirection(DcMotor.Direction.REVERSE);
+
 
 
         FrontLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE); //Set Zero Power Behaviour
@@ -113,18 +97,6 @@ public class Framework { // Main class for everything
         BackLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         BackRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        Intake.setDirection(Servo.Direction.REVERSE);
-
-        ArmMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        ArmMotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        ArmMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER); // Run Encoders
-        ArmMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-
-        ClawPositionMessage = Telemetry.addData("Claw Position", ClawPosition);
-        ExtenderPositionMessage = Telemetry.addData("Extender Position", ExtenderPosition);
-        EncoderValueMessage = Telemetry.addData("Encoder Value", BackLeftMotor.getCurrentPosition());
 
 
         ResetEncoder();
@@ -210,8 +182,7 @@ public class Framework { // Main class for everything
 
     public void UpdateData() {
 
-        ClawPositionMessage.setValue(ClawPosition);
-        ExtenderPositionMessage.setValue(ExtenderPosition);
+
 
         IMUAngle CurrentAngle = GetIMUAngles();
 
@@ -227,26 +198,6 @@ public class Framework { // Main class for everything
 
     public class Auto {
 
-        @Deprecated
-        public void MoveArm(int Time, boolean Up) {
-            byte ArmDirection;
-
-            if (Up) {
-                ArmDirection = -1;
-            } else {
-                ArmDirection = 1;
-            }
-
-
-            ArmMotor1.setPower(0.1 * ArmDirection);
-            ArmMotor1.setPower(0.1 * ArmDirection);
-
-            Sleep(Time);
-
-            ArmMotor1.setPower(0);
-            ArmMotor1.setPower(0);
-
-        }
 
         @Deprecated
         public void Turn(int Time, boolean Right) { // (2 Secs = 90 Degrees) = WRONG
@@ -380,28 +331,7 @@ public class Framework { // Main class for everything
         }
 
 
-        public void SetArm(double TimedFor) {
 
-
-
-            ArmMotor1.setPower(-0.1);
-            ArmMotor2.setPower(-0.1);
-
-            Sleep((int) Math.round(TimedFor * 1000));
-
-            ArmMotor1.setPower(0);
-            ArmMotor2.setPower(0);
-
-            Log("Arm in motion for " + Double.toString(TimedFor) + " secs");
-
-        }
-
-        public void SetClaw(double SetTo) {
-            Intake.setPosition(SetTo);
-            ClawPosition = SetTo;
-            Log("Set Claw position to " + Double.toString(SetTo));
-
-        }
 
 
         public void MoveSideways(float Distance, Boolean Left) { // WARNING: Avoid using for long distanced without adjusting angle
