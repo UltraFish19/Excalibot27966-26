@@ -20,14 +20,19 @@ public class ExcalibotTeleOP extends OpMode {
 
 
 
-    ElapsedTime Time;
+    ElapsedTime TelemetryTimer;
+
+
+    boolean IntakeValueLastIteration = false;
+
 
 
     @Override
     public void init() {
 
-        Bot.Init(hardwareMap, telemetry);
-        Time = new ElapsedTime();
+        Bot.Init(hardwareMap, telemetry); // The Framework needs to get sent the 2 params because it doesn't have any access to them by default
+        TelemetryTimer = new ElapsedTime();
+
 
     }
 
@@ -88,6 +93,15 @@ public class ExcalibotTeleOP extends OpMode {
 
         }
 
+        boolean IntakeControllerValue = gamepad1.right_bumper;
+
+        if (IntakeControllerValue && !IntakeValueLastIteration){
+            double PreviousMotorPower = Bot.Intake.getPower();
+
+            Bot.Intake.setPower(Math.abs(PreviousMotorPower - 1)); // If it is 1 it will be 0, and 0 will be 1
+        }
+        IntakeValueLastIteration = IntakeControllerValue;
+
 
 
         Bot.FrontLeftMotor.setPower(JavaUtil.averageOfList(FrontLeftMotorOutputs));
@@ -104,10 +118,12 @@ public class ExcalibotTeleOP extends OpMode {
         DriveTrainLoop();
        // ExtenderLoop();
 
-        if (Time.milliseconds() >= 250.0) { // Telemetry log every 250 millisecond to not overflow
+        if (TelemetryTimer.milliseconds() >= 250.0) { // Telemetry log every 250 millisecond to not overflow
             Bot.UpdateData();
-            Time.reset();
+            TelemetryTimer.reset();
         }
+
+
 
 
     }
