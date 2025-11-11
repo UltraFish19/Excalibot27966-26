@@ -36,59 +36,65 @@ public class ExcalibotTeleOP extends OpMode {
 
     }
 
+
+
+    List<Float> FrontLeftMotorOutputs;
+    List<Float> FrontRightMotorOutputs;
+    List<Float> BackLeftMotorOutputs;
+    List<Float> BackRightMotorOutputs;
+
+    private void StraightMove(float Speed){
+        FrontLeftMotorOutputs.add(Speed);
+        FrontRightMotorOutputs.add(Speed);
+        BackLeftMotorOutputs.add(Speed);
+        BackRightMotorOutputs.add(Speed);
+    }
+
+    private void Crabwalk(float Speed){
+        FrontLeftMotorOutputs.add(-Speed);
+        FrontRightMotorOutputs.add(Speed);
+        BackLeftMotorOutputs.add(-Speed);
+        BackRightMotorOutputs.add(Speed);
+    }
+
+    private void Rotate(float Speed){
+        FrontLeftMotorOutputs.add(Speed);
+        FrontRightMotorOutputs.add(-Speed);
+        BackLeftMotorOutputs.add(Speed);
+        BackRightMotorOutputs.add(-Speed);
+    }
+
+
     private void DriveTrainLoop() {
 
-        List<Float> FrontLeftMotorOutputs = new ArrayList<Float>();
-        List<Float> FrontRightMotorOutputs = new ArrayList<Float>();
-        List<Float> BackLeftMotorOutputs = new ArrayList<Float>();
-        List<Float> BackRightMotorOutputs = new ArrayList<Float>();
+        FrontLeftMotorOutputs = new ArrayList<Float>();
+        FrontRightMotorOutputs = new ArrayList<Float>();
+        BackLeftMotorOutputs = new ArrayList<Float>();
+        BackRightMotorOutputs = new ArrayList<Float>();
 
         if (gamepad1.left_stick_y != 0) { // Forward
-            FrontLeftMotorOutputs.add(gamepad1.left_stick_y);
-            FrontRightMotorOutputs.add(gamepad1.left_stick_y);
-            BackLeftMotorOutputs.add(gamepad1.left_stick_y);
-            BackRightMotorOutputs.add(gamepad1.left_stick_y);
+            StraightMove(gamepad1.left_stick_y);
         }
 
         if (gamepad1.right_stick_x != 0) {
             if (gamepad1.right_stick_button) { // Crab walking
-
-                FrontLeftMotorOutputs.add(-gamepad1.right_stick_x);
-                FrontRightMotorOutputs.add(gamepad1.right_stick_x);
-                BackLeftMotorOutputs.add(-gamepad1.right_stick_x);
-                BackRightMotorOutputs.add(gamepad1.right_stick_x);
+                Crabwalk(gamepad1.right_stick_x);
             } else { // Rotate
-                FrontLeftMotorOutputs.add(-gamepad1.right_stick_x);
-                FrontRightMotorOutputs.add(gamepad1.right_stick_x);
-                BackLeftMotorOutputs.add(gamepad1.right_stick_x);
-                BackRightMotorOutputs.add(-gamepad1.right_stick_x);
+                Rotate(gamepad1.right_stick_x);
             }
         }
 
         if (gamepad1.dpad_right) { // Slow Crab walking
-            FrontLeftMotorOutputs.add(-SlowSpeed);
-            FrontRightMotorOutputs.add(SlowSpeed);
-            BackLeftMotorOutputs.add(-SlowSpeed);
-            BackRightMotorOutputs.add(SlowSpeed);
+            Crabwalk(SlowSpeed);
 
         } else if (gamepad1.dpad_left) {
-            FrontLeftMotorOutputs.add(SlowSpeed);
-            FrontRightMotorOutputs.add(-SlowSpeed);
-            BackLeftMotorOutputs.add(SlowSpeed);
-            BackRightMotorOutputs.add(-SlowSpeed);
-
+            Crabwalk(-SlowSpeed);
         }
 
         if (gamepad1.dpad_up) {
-            FrontLeftMotorOutputs.add(-SlowSpeed);
-            FrontRightMotorOutputs.add(-SlowSpeed);
-            BackLeftMotorOutputs.add(-SlowSpeed);
-            BackRightMotorOutputs.add(-SlowSpeed);
+            StraightMove(SlowSpeed);
         } else if (gamepad1.dpad_down){
-            FrontLeftMotorOutputs.add(SlowSpeed);
-            FrontRightMotorOutputs.add(SlowSpeed);
-            BackLeftMotorOutputs.add(SlowSpeed);
-            BackRightMotorOutputs.add(SlowSpeed);
+            StraightMove(-SlowSpeed);
 
 
         }
