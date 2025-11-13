@@ -53,8 +53,8 @@ public class ExcalibotTeleOP extends OpMode {
     private void Crabwalk(float Speed){
         FrontLeftMotorOutputs.add(-Speed);
         FrontRightMotorOutputs.add(Speed);
-        BackLeftMotorOutputs.add(-Speed);
-        BackRightMotorOutputs.add(Speed);
+        BackLeftMotorOutputs.add(Speed);
+        BackRightMotorOutputs.add(-Speed);
     }
 
     private void Rotate(float Speed){
@@ -73,7 +73,7 @@ public class ExcalibotTeleOP extends OpMode {
         BackRightMotorOutputs = new ArrayList<Float>();
 
         if (gamepad1.left_stick_y != 0) { // Forward
-            StraightMove(gamepad1.left_stick_y);
+            StraightMove(-gamepad1.left_stick_y);
         }
 
         if (gamepad1.right_stick_x != 0) {
@@ -101,12 +101,12 @@ public class ExcalibotTeleOP extends OpMode {
 
         boolean IntakeControllerValue = gamepad1.right_bumper;
 
-        if (IntakeControllerValue && !IntakeValueLastIteration){
-            double PreviousMotorPower = Bot.Intake.getPower();
-
-            Bot.Intake.setPower(Math.abs(PreviousMotorPower - 1)); // If it is 1 it will be 0, and 0 will be 1
-        }
-        IntakeValueLastIteration = IntakeControllerValue;
+//        if (IntakeControllerValue && !IntakeValueLastIteration){
+//            double PreviousMotorPower = Bot.Intake.getPower();
+//
+//             Bot.Intake.setPower(Math.abs(PreviousMotorPower - 1)); // If it is 1 it will be 0, and 0 will be 1
+//        }
+//        IntakeValueLastIteration = IntakeControllerValue;
 
 
 
