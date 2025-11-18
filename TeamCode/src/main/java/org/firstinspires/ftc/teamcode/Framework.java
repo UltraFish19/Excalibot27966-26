@@ -40,8 +40,6 @@ public class Framework { // Main class for everything
 
     //Telemetry Data
 
-    Telemetry.Item ExtenderPositionMessage;
-    Telemetry.Item ClawPositionMessage; //The message appearing in the Driver hub console that states the Claw Position
 
     Telemetry.Item OrienYaw;
     Telemetry.Item OrienRoll;
@@ -52,8 +50,7 @@ public class Framework { // Main class for everything
 
     final float WheelDiameter = 31.42f; // In cm
 
-
-    final int TicksPerRotation = 1120;
+    final float TicksPerRotation = 537.6f;
 
     final double TicksPerCM = TicksPerRotation / WheelDiameter;
 

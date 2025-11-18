@@ -12,7 +12,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 
 @TeleOp(name = "Color Sensor Test")
-public class SensorsTest extends OpMode {
+public class ColorSensorTest extends OpMode {
 
 
     RevColorSensorV3 ColourSensor;
