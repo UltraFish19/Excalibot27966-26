@@ -65,6 +65,16 @@ public class ExcalibotTeleOP extends OpMode {
     }
 
 
+    private void IntakeLoop(){
+        if (gamepad1.right_bumper) {
+            Bot.Intake.setPower(-1.0);
+        } else if (gamepad1.left_bumper) {
+            Bot.Intake.setPower(1.0);
+        } else {
+            Bot.Intake.setPower(0);
+        }
+    }
+
     private void DriveTrainLoop() {
 
         FrontLeftMotorOutputs = new ArrayList<Float>();
@@ -99,14 +109,8 @@ public class ExcalibotTeleOP extends OpMode {
 
         }
 
-        boolean IntakeControllerValue = gamepad1.right_bumper;
 
-//        if (IntakeControllerValue && !IntakeValueLastIteration){
-//            double PreviousMotorPower = Bot.Intake.getPower();
-//
-//             Bot.Intake.setPower(Math.abs(PreviousMotorPower - 1)); // If it is 1 it will be 0, and 0 will be 1
-//        }
-//        IntakeValueLastIteration = IntakeControllerValue;
+
 
 
 
@@ -122,7 +126,7 @@ public class ExcalibotTeleOP extends OpMode {
     public void loop() {
 
         DriveTrainLoop();
-       // ExtenderLoop();
+        IntakeLoop();
 
         if (TelemetryTimer.milliseconds() >= 250.0) { // Telemetry log every 250 millisecond to not overflow
             Bot.UpdateData();

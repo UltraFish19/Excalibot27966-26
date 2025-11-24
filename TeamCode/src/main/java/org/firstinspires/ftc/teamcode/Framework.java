@@ -30,7 +30,7 @@ public class Framework { // Main class for everything
     public DcMotor FrontRightMotor;
     public DcMotor BackLeftMotor;
     public DcMotor BackRightMotor;
-   // public DcMotor Intake; // Intake to take balls in
+    public DcMotor Intake; // Intake to take balls in
     public DcMotor Shooter; // To shoot the ball
     public HardwareMap Hardware;
 
@@ -84,9 +84,9 @@ public class Framework { // Main class for everything
         BackLeftMotor = Hardware.get(DcMotor.class, "BackLeftMotor");
         BackRightMotor = Hardware.get(DcMotor.class, "BackRightMotor");
 
-//        Intake = Hardware.get(DcMotor.class,"Intake");
-//        Intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        Intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); // We do not need a motor for something that spins mindlessly
+        Intake = Hardware.get(DcMotor.class,"Intake");
+        Intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        Intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); // We do not need a motor for something that spins mindlessly
 
         IMUSensor = Hardware.get(IMU.class, "imu");
 
