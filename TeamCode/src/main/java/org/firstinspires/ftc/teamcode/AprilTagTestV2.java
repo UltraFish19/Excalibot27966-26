@@ -38,8 +38,9 @@ public class AprilTagTestV2 extends OpMode {
 
         VisionBuilder.setCamera(hardwareMap.get(WebcamName.class,"FrontCam"));
         VisionBuilder.addProcessor(ATagProcessor);
-        VisionBuilder.setCameraResolution(new Size(620,480));
+        VisionBuilder.setCameraResolution(new Size(640,480));
         VisionBuilder.enableLiveView(true);
+        VisionBuilder.setStreamFormat(VisionPortal.StreamFormat.MJPEG);
 
         Vision = VisionBuilder.build();
 
@@ -63,6 +64,7 @@ public class AprilTagTestV2 extends OpMode {
                 if (ATagDetection.ftcPose != null) {
                     telemetry.addLine("Detected FTC Tag: " + ATagDetection.id);
                     telemetry.addLine("Distance: " + ATagDetection.ftcPose.range);
+                    telemetry.update();
                 }
 
             }

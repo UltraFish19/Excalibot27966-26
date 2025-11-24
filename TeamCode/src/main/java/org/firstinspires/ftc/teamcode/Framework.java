@@ -10,6 +10,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -31,7 +32,7 @@ public class Framework { // Main class for everything
     public DcMotor BackLeftMotor;
     public DcMotor BackRightMotor;
     public DcMotor Intake; // Intake to take balls in
-    public DcMotor Shooter; // To shoot the ball
+    public DcMotor Shooter;  //To shoot the ball
     public HardwareMap Hardware;
 
     IMU.Parameters IMUParameters;
@@ -84,6 +85,11 @@ public class Framework { // Main class for everything
         Intake = Hardware.get(DcMotor.class,"Intake");
         Intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         Intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); // We do not need a motor for something that spins mindlessly
+
+        Shooter = Hardware.get(DcMotor.class,"Shooter");
+        Shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        Shooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        Shooter.setDirection(DcMotorSimple.Direction.REVERSE);
 
         IMUSensor = Hardware.get(IMU.class, "imu");
 
