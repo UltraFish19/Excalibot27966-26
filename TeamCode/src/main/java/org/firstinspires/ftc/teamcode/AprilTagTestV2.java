@@ -24,7 +24,7 @@ public class AprilTagTestV2 extends OpMode {
 
     VisionPortal Vision;
     AprilTagProcessor ATagProcessor; //April tag processer
-    ElapsedTime VisionTimer; // Prevents overflowing CPU usage.
+
 
     @Override
     public void init(){
@@ -44,7 +44,7 @@ public class AprilTagTestV2 extends OpMode {
 
         Vision = VisionBuilder.build();
 
-        VisionTimer = new ElapsedTime();
+
 
 
 
@@ -55,7 +55,7 @@ public class AprilTagTestV2 extends OpMode {
     @Override
     public void loop (){
 
-        if (VisionTimer.seconds() >= 1) {
+
 
             List<AprilTagDetection> ATagDetections = ATagProcessor.getDetections();
 
@@ -71,11 +71,10 @@ public class AprilTagTestV2 extends OpMode {
 
 
 
-            VisionTimer.reset();
+
         }
 
 
-    }
 
 
 

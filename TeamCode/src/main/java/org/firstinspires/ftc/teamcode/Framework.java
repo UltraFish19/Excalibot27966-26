@@ -7,6 +7,8 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import android.util.Size;
+
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -17,8 +19,11 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles; //Import everything
+import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 public class Framework { // Main class for everything
 
@@ -119,6 +124,33 @@ public class Framework { // Main class for everything
         OrienYaw = Telemetry.addData("Yaw", 0.0);
         OrienRoll = Telemetry.addData("Roll", 0.0);
         OrienPitch = Telemetry.addData("Pitch", 0.0);
+
+
+    }
+
+
+    VisionPortal Vision;
+    AprilTagProcessor ATagProcessor; //April tag processer
+    public void SetupCamera(){
+        AprilTagProcessor.Builder ATagBuilder = new AprilTagProcessor.Builder();
+
+        ATagBuilder.setDrawTagID(true);
+
+        ATagProcessor = ATagBuilder.build();
+
+        VisionPortal.Builder VisionBuilder = new VisionPortal.Builder();
+
+        VisionBuilder.setCamera(Hardware.get(WebcamName.class,"FrontCam"));
+        VisionBuilder.addProcessor(ATagProcessor);
+        VisionBuilder.setCameraResolution(new Size(640,480));
+        VisionBuilder.enableLiveView(true);
+        VisionBuilder.setStreamFormat(VisionPortal.StreamFormat.MJPEG);
+
+        Vision = VisionBuilder.build();
+
+
+
+
 
 
     }

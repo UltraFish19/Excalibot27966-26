@@ -10,20 +10,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-@TeleOp(name = "Excalibot TeleOP")
+@TeleOp(name = "TeleOP (1.2)")
 public class ExcalibotTeleOP extends OpMode {
 
     Framework Bot = new Framework();
 
 
-    final float SlowSpeed = 0.35f;
+    final float SlowSpeed = 0.15f;
 
 
 
     ElapsedTime TelemetryTimer;
 
 
-    boolean IntakeValueLastIteration = false;
+
 
 
 
@@ -31,6 +31,7 @@ public class ExcalibotTeleOP extends OpMode {
     public void init() {
 
         Bot.Init(hardwareMap, telemetry); // The Framework needs to get sent the 2 params because it doesn't have any access to them by default
+       // Bot.SetupCamera();
         TelemetryTimer = new ElapsedTime();
 
 
@@ -51,10 +52,10 @@ public class ExcalibotTeleOP extends OpMode {
     }
 
     private void Crabwalk(float Speed){
-        FrontLeftMotorOutputs.add(-Speed);
-        FrontRightMotorOutputs.add(Speed);
-        BackLeftMotorOutputs.add(Speed);
-        BackRightMotorOutputs.add(-Speed);
+        FrontLeftMotorOutputs.add(Speed);
+        FrontRightMotorOutputs.add(-Speed);
+        BackLeftMotorOutputs.add(-Speed);
+        BackRightMotorOutputs.add(Speed);
     }
 
     private void Rotate(float Speed){
@@ -85,14 +86,24 @@ public class ExcalibotTeleOP extends OpMode {
         BackRightMotorOutputs = new ArrayList<Float>();
 
         if (gamepad1.left_stick_y != 0) { // Forward
-            StraightMove(-gamepad1.left_stick_y);
+            float Power = (float) Math.copySign(
+                    Math.pow(Math.abs(gamepad1.left_stick_y), 1.8),
+                    -gamepad1.left_stick_y
+            );
+
+            StraightMove(Power);
         }
 
         if (gamepad1.right_stick_x != 0) {
             if (gamepad1.right_stick_button) { // Crab walking
                 Crabwalk(gamepad1.right_stick_x);
             } else { // Rotate
-                Rotate(gamepad1.right_stick_x);
+                float Power = (float) Math.copySign(
+                        Math.pow(Math.abs(gamepad1.right_stick_x), 1.8),
+                        gamepad1.right_stick_x // Uses the sign of the inverted input
+                );
+
+                Rotate(Power);
             }
         }
 
@@ -127,6 +138,8 @@ public class ExcalibotTeleOP extends OpMode {
 
     public void loop() {
 
+
+
         DriveTrainLoop();
         AdditionalMotorLoop();
 
@@ -134,6 +147,8 @@ public class ExcalibotTeleOP extends OpMode {
             Bot.UpdateData();
             TelemetryTimer.reset();
         }
+
+
 
 
 
