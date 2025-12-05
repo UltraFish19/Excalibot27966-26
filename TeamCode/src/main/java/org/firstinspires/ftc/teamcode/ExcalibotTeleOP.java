@@ -10,63 +10,61 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-@TeleOp(name = "TeleOP (1.2)")
+@TeleOp(name = "TeleOP (1.3)")
 public class ExcalibotTeleOP extends OpMode {
 
-    Framework Bot = new Framework();
-
-
     final float SlowSpeed = 0.15f;
-
-
-
+    Framework Bot = new Framework();
     ElapsedTime TelemetryTimer;
-
-
-
-
-
-
-    @Override
-    public void init() {
-
-        Bot.Init(hardwareMap, telemetry); // The Framework needs to get sent the 2 params because it doesn't have any access to them by default
-       // Bot.SetupCamera();
-        TelemetryTimer = new ElapsedTime();
-
-
-    }
-
-
-
     List<Float> FrontLeftMotorOutputs;
     List<Float> FrontRightMotorOutputs;
     List<Float> BackLeftMotorOutputs;
     List<Float> BackRightMotorOutputs;
 
-    private void StraightMove(float Speed){
-        FrontLeftMotorOutputs.add(Speed);
-        FrontRightMotorOutputs.add(Speed);
-        BackLeftMotorOutputs.add(Speed);
-        BackRightMotorOutputs.add(Speed);
+    @Override
+    public void init() {
+
+        Bot.Init(hardwareMap, telemetry); // The Framework needs to get sent the 2 params because it doesn't have any access to them by default
+        // Bot.SetupCamera();
+        TelemetryTimer = new ElapsedTime();
+
+
     }
 
-    private void Crabwalk(float Speed){
-        FrontLeftMotorOutputs.add(Speed);
-        FrontRightMotorOutputs.add(-Speed);
-        BackLeftMotorOutputs.add(-Speed);
-        BackRightMotorOutputs.add(Speed);
+    private void Move(float Speed, String Action) {
+        DriveTrainParams MotorParameter; // The correct directions of the motors
+
+        switch (Action) {
+            case "Straight":
+                MotorParameter = Framework.MotorParams.StraightParams;
+                break;
+
+            case "Rotate":
+                MotorParameter = Framework.MotorParams.RotateParams;
+                break;
+
+            case "Crabwalk":
+                MotorParameter = Framework.MotorParams.CrabwalkParams;
+                break;
+
+            default:
+                throw new RuntimeException("Invalid Movement Action for drive train.");
+
+        }
+
+        FrontLeftMotorOutputs.add(Speed * MotorParameter.FrontLeft);
+        FrontRightMotorOutputs.add(Speed * MotorParameter.FrontRight);
+        BackLeftMotorOutputs.add(Speed * MotorParameter.BackLeft);
+        BackRightMotorOutputs.add(Speed * MotorParameter.BackRight);
+
+
+
     }
 
-    private void Rotate(float Speed){
-        FrontLeftMotorOutputs.add(Speed);
-        FrontRightMotorOutputs.add(-Speed);
-        BackLeftMotorOutputs.add(Speed);
-        BackRightMotorOutputs.add(-Speed);
-    }
 
 
-    private void AdditionalMotorLoop(){
+
+    private void AdditionalMotorLoop() {
         if (gamepad1.right_bumper) {
             Bot.Intake.setPower(-1.0);
         } else if (gamepad1.left_bumper) {
@@ -88,43 +86,39 @@ public class ExcalibotTeleOP extends OpMode {
         if (gamepad1.left_stick_y != 0) { // Forward
             float Power = (float) Math.copySign(
                     Math.pow(Math.abs(gamepad1.left_stick_y), 1.8),
-                    -gamepad1.left_stick_y
+                    gamepad1.left_stick_y
             );
 
-            StraightMove(Power);
+            Move(Power,"Straight");
         }
 
         if (gamepad1.right_stick_x != 0) {
             if (gamepad1.right_stick_button) { // Crab walking
-                Crabwalk(gamepad1.right_stick_x);
+                Move(gamepad1.right_stick_x,"Crabwalk");
             } else { // Rotate
                 float Power = (float) Math.copySign(
                         Math.pow(Math.abs(gamepad1.right_stick_x), 1.8),
                         gamepad1.right_stick_x // Uses the sign of the inverted input
                 );
 
-                Rotate(Power);
+                Move(Power,"Rotate");
             }
         }
 
         if (gamepad1.dpad_right) { // Slow Crab walking
-            Crabwalk(SlowSpeed);
+            Move(SlowSpeed,"Crabwalk");
 
         } else if (gamepad1.dpad_left) {
-            Crabwalk(-SlowSpeed);
+            Move(-SlowSpeed,"Crabwalk");
         }
 
         if (gamepad1.dpad_up) {
-            StraightMove(SlowSpeed);
-        } else if (gamepad1.dpad_down){
-            StraightMove(-SlowSpeed);
+            Move(SlowSpeed,"Straight");
+        } else if (gamepad1.dpad_down) {
+            Move(-SlowSpeed,"Straight");
 
 
         }
-
-
-
-
 
 
         Bot.FrontLeftMotor.setPower(JavaUtil.averageOfList(FrontLeftMotorOutputs));
@@ -135,9 +129,7 @@ public class ExcalibotTeleOP extends OpMode {
     }
 
 
-
     public void loop() {
-
 
 
         DriveTrainLoop();
@@ -147,10 +139,6 @@ public class ExcalibotTeleOP extends OpMode {
             Bot.UpdateData();
             TelemetryTimer.reset();
         }
-
-
-
-
 
 
     }

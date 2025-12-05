@@ -25,6 +25,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles; /
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Framework { // Main class for everything
 
 
@@ -59,6 +62,22 @@ public class Framework { // Main class for everything
     final float TicksPerRotation = 537.6f;
 
     final double TicksPerCM = TicksPerRotation / WheelDiameter;
+
+
+
+
+
+    public static class MotorParams{
+        public static DriveTrainParams  StraightParams = new DriveTrainParams(-1,-1,-1,-1);
+        public static DriveTrainParams RotateParams = new DriveTrainParams(1,-1,1,-1);
+        public static DriveTrainParams CrabwalkParams = new DriveTrainParams(1,-1,-1,1);
+    }
+
+
+
+
+
+
 
 
     private void ResetEncoder() {
