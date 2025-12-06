@@ -10,10 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-@TeleOp(name = "TeleOP (1.3)")
+@TeleOp(name = "TeleOP (1.5)")
 public class ExcalibotTeleOP extends OpMode {
 
-    final float SlowSpeed = 0.15f;
+    final float SlowSpeed = 0.25f;
     Framework Bot = new Framework();
     ElapsedTime TelemetryTimer;
     List<Float> FrontLeftMotorOutputs;
@@ -73,15 +73,21 @@ public class ExcalibotTeleOP extends OpMode {
             Bot.Intake.setPower(0);
         }
 
-        Bot.Shooter.setPower(gamepad1.right_trigger);
+        if (gamepad1.right_trigger > 0){
+        Bot.Shooter.setVelocity((1200 / 60) * 117);
+    }   else if (gamepad1.left_trigger > 0) {
+        Bot.Shooter.setPower(-(gamepad1.left_trigger / 7.0));
+        } else{
+            Bot.Shooter.setPower(0);
+        }
     }
 
     private void DriveTrainLoop() {
 
-        FrontLeftMotorOutputs = new ArrayList<Float>();
-        FrontRightMotorOutputs = new ArrayList<Float>();
-        BackLeftMotorOutputs = new ArrayList<Float>();
-        BackRightMotorOutputs = new ArrayList<Float>();
+        FrontLeftMotorOutputs = new ArrayList<>();
+        FrontRightMotorOutputs = new ArrayList<>();
+        BackLeftMotorOutputs = new ArrayList<>();
+        BackRightMotorOutputs = new ArrayList<>();
 
         if (gamepad1.left_stick_y != 0) { // Forward
             float Power = (float) Math.copySign(
@@ -136,6 +142,7 @@ public class ExcalibotTeleOP extends OpMode {
         AdditionalMotorLoop();
 
         if (TelemetryTimer.milliseconds() >= 250.0) { // Telemetry log every 250 millisecond to not overflow
+
             Bot.UpdateData();
             TelemetryTimer.reset();
         }

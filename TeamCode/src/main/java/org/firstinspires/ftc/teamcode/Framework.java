@@ -12,6 +12,7 @@ import android.util.Size;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
@@ -40,7 +41,7 @@ public class Framework { // Main class for everything
     public DcMotor BackLeftMotor;
     public DcMotor BackRightMotor;
     public DcMotor Intake; // Intake to take balls in
-    public DcMotor Shooter;  //To shoot the ball
+    public DcMotorEx Shooter;  //To shoot the ball
     public HardwareMap Hardware;
 
     IMU.Parameters IMUParameters;
@@ -60,6 +61,8 @@ public class Framework { // Main class for everything
     final float WheelDiameter = 31.42f; // In cm
 
     final float TicksPerRotation = 537.6f;
+
+    final float ShooterTicksPerRotation = 117;
 
     final double TicksPerCM = TicksPerRotation / WheelDiameter;
 
@@ -110,9 +113,9 @@ public class Framework { // Main class for everything
         Intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         Intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); // We do not need a motor for something that spins mindlessly
 
-        Shooter = Hardware.get(DcMotor.class,"Shooter");
+        Shooter = Hardware.get(DcMotorEx.class,"Shooter");
         Shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        Shooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        Shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         Shooter.setDirection(DcMotorSimple.Direction.REVERSE);
 
         IMUSensor = Hardware.get(IMU.class, "imu");
@@ -143,7 +146,7 @@ public class Framework { // Main class for everything
         OrienYaw = Telemetry.addData("Yaw", 0.0);
         OrienRoll = Telemetry.addData("Roll", 0.0);
         OrienPitch = Telemetry.addData("Pitch", 0.0);
-
+        EncoderValueMessage = Telemetry.addData("Shooter Speed",0.0);
 
     }
 
@@ -187,8 +190,8 @@ public class Framework { // Main class for everything
 
         IMUParameters = new IMU.Parameters(
                 new RevHubOrientationOnRobot(
-                        RevHubOrientationOnRobot.LogoFacingDirection.UP,
-                        RevHubOrientationOnRobot.UsbFacingDirection.FORWARD
+                        RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
+                        RevHubOrientationOnRobot.UsbFacingDirection.UP
                 )
 
 
@@ -249,6 +252,7 @@ public class Framework { // Main class for everything
         OrienYaw.setValue(CurrentAngle.Yaw);
         OrienRoll.setValue(CurrentAngle.Roll);
         OrienPitch.setValue(CurrentAngle.Pitch);
+        EncoderValueMessage.setValue((Shooter.getVelocity() / 117) * 60);
 
 
     }
@@ -362,6 +366,20 @@ public class Framework { // Main class for everything
         }
 
 
+        public double GetShooterMotorRPM(){
+
+            double OriginalPos = Shooter.getCurrentPosition();
+
+            Sleep(100);
+
+            double Delta = OriginalPos - Shooter.getCurrentPosition();
+
+            double RPS = (Delta * 10) / ShooterTicksPerRotation;
+
+            return RPS * 60;
+        }
+
+
         public void Move(float Distance) {
         /*
         Set the robot's distance to a value (In cm)
@@ -372,10 +390,10 @@ public class Framework { // Main class for everything
             double Ticks = Distance * TicksPerCM;
 
             while (Math.abs(BackLeftMotor.getCurrentPosition()) <= Ticks ) {
-                FrontLeftMotor.setPower(-0.5);
-                FrontRightMotor.setPower(-0.5);
-                BackLeftMotor.setPower(-0.5);
-                BackRightMotor.setPower(-0.5);
+                FrontLeftMotor.setPower(0.5);
+                FrontRightMotor.setPower(0.5);
+                BackLeftMotor.setPower(0.5);
+                BackRightMotor.setPower(0.5);
 
                 Sleep(10);
             }
@@ -429,6 +447,20 @@ public class Framework { // Main class for everything
             Log("Moved " + Float.toString(Distance) + "cm");
 
 
+        }
+
+
+        public void Shoot(){
+            Shooter.setPower(1.0);
+
+            Sleep(5000); // Wait 5 sec
+
+            Intake.setPower(1.0);
+
+            Sleep(3000);
+
+            Intake.setPower(0);
+            Shooter.setPower(0);
         }
 
     }
