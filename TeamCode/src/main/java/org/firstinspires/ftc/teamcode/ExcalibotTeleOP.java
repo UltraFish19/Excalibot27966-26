@@ -74,9 +74,9 @@ public class ExcalibotTeleOP extends OpMode {
         }
 
         if (gamepad1.right_trigger > 0){
-        Bot.Shooter.setVelocity((1200 / 60) * 117);
+         Bot.Shooter.setVelocity((1200 / 60) * 117);
     }   else if (gamepad1.left_trigger > 0) {
-        Bot.Shooter.setPower(-(gamepad1.left_trigger / 7.0));
+        Bot.Shooter.setPower(-(gamepad1.left_trigger / 2.0));
         } else{
             Bot.Shooter.setPower(0);
         }
