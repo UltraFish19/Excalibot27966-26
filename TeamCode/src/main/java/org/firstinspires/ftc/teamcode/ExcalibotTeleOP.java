@@ -25,7 +25,7 @@ public class ExcalibotTeleOP extends OpMode {
     public void init() {
 
         Bot.Init(hardwareMap, telemetry); // The Framework needs to get sent the 2 params because it doesn't have any access to them by default
-        // Bot.SetupCamera();
+        Bot.SetupCamera();
         TelemetryTimer = new ElapsedTime();
 
 

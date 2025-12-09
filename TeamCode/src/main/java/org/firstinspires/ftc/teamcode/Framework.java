@@ -24,6 +24,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles; //Import everything
 import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.ArrayList;
@@ -54,16 +55,15 @@ public class Framework { // Main class for everything
     Telemetry.Item OrienYaw;
     Telemetry.Item OrienRoll;
     Telemetry.Item OrienPitch;
-
     Telemetry.Item EncoderValueMessage;
+    Telemetry.Item BasketRange;
+
+
 
 
     final float WheelDiameter = 31.42f; // In cm
-
     final float TicksPerRotation = 537.6f;
-
     final float ShooterTicksPerRotation = 117;
-
     final double TicksPerCM = TicksPerRotation / WheelDiameter;
 
 
@@ -147,6 +147,7 @@ public class Framework { // Main class for everything
         OrienRoll = Telemetry.addData("Roll", 0.0);
         OrienPitch = Telemetry.addData("Pitch", 0.0);
         EncoderValueMessage = Telemetry.addData("Shooter Speed",0.0);
+        BasketRange = Telemetry.addData("Range: ", "Unknown, Tag not detected!");
 
     }
 
@@ -242,6 +243,39 @@ public class Framework { // Main class for everything
 
     // Auto functions
 
+    public double GetRange(){ // Returns -1 for no detection, -2 for multiple, -3 for error, -4 invalid ftc pose. // Returns range in cm
+
+        try{
+
+            ArrayList<AprilTagDetection> Detections = ATagProcessor.getDetections();
+            AprilTagDetection FirstDetection;
+
+            if (Detections.isEmpty()){
+                return -1;
+            } else if (Detections.size() > 1) {
+                return -2;
+            } else{
+                FirstDetection = Detections.get(0);
+
+                if( FirstDetection.ftcPose != null){
+                   return (FirstDetection.ftcPose.range * 2.54) * 1.12;
+                } else {
+                    return  -4;
+                }
+            }
+
+
+        } catch(Exception E){
+            return -3;
+
+        }
+
+
+
+
+    }
+
+
 
     public void UpdateData() {
 
@@ -253,6 +287,21 @@ public class Framework { // Main class for everything
         OrienRoll.setValue(CurrentAngle.Roll);
         OrienPitch.setValue(CurrentAngle.Pitch);
         EncoderValueMessage.setValue((Shooter.getVelocity() / 117) * 60);
+
+        double TagRange = GetRange();
+
+        if (TagRange == -1){
+            BasketRange.setValue("No tag detected!");
+
+        } else if (TagRange == -2) {
+            BasketRange.setValue("Multiple tags detected!");
+        } else if (TagRange == -4) {
+            BasketRange.setValue("Can't fully decode tag, please align the camera more!");
+        } else {
+            BasketRange.setValue(String.valueOf(TagRange) + "CM");
+        }
+
+
 
 
     }
