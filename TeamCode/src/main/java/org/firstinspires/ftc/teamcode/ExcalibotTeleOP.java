@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-@TeleOp(name = "TeleOP (1.5)")
+@TeleOp(name = "TeleOP (1.6)")
 public class ExcalibotTeleOP extends OpMode {
 
     final float SlowSpeed = 0.25f;
@@ -30,6 +30,8 @@ public class ExcalibotTeleOP extends OpMode {
 
 
     }
+
+
 
     private void Move(float Speed, String Action) {
         DriveTrainParams MotorParameter; // The correct directions of the motors
@@ -74,7 +76,7 @@ public class ExcalibotTeleOP extends OpMode {
         }
 
         if (gamepad1.right_trigger > 0){
-         Bot.Shooter.setVelocity((1200 / 60) * 117);
+         Bot.Shooter.setVelocity((1200 / 60) * Bot.ShooterTicksPerRotation);
     }   else if (gamepad1.left_trigger > 0) {
         Bot.Shooter.setPower(-(gamepad1.left_trigger / 2.0));
         } else{
@@ -98,9 +100,13 @@ public class ExcalibotTeleOP extends OpMode {
             Move(Power,"Straight");
         }
 
+        if (gamepad1.left_stick_x !=0) {
+            Move(gamepad1.left_stick_x,"Crabwalk");
+        }
+
         if (gamepad1.right_stick_x != 0) {
             if (gamepad1.right_stick_button) { // Crab walking
-                Move(gamepad1.right_stick_x,"Crabwalk");
+                // Action used to be here.
             } else { // Rotate
                 float Power = (float) Math.copySign(
                         Math.pow(Math.abs(gamepad1.right_stick_x), 1.8),
@@ -119,9 +125,9 @@ public class ExcalibotTeleOP extends OpMode {
         }
 
         if (gamepad1.dpad_up) {
-            Move(SlowSpeed,"Straight");
-        } else if (gamepad1.dpad_down) {
             Move(-SlowSpeed,"Straight");
+        } else if (gamepad1.dpad_down) {
+            Move(SlowSpeed,"Straight");
 
 
         }
