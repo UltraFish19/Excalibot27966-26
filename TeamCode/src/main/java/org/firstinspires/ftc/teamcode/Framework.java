@@ -64,6 +64,9 @@ public class Framework { // Main class for everything
     final float ShooterTicksPerRotation = 117;
     final double TicksPerCM = TicksPerRotation / WheelDiameter;
 
+    final double SweetSpot = 132;
+    final double SweetSpotTolerance = 0.2;
+
 
 
 
@@ -195,6 +198,8 @@ public class Framework { // Main class for everything
 
 
         );
+
+        IMUSensor.initialize(IMUParameters);
 
         IMUSensor.resetYaw(); // Reset back to 0
 
@@ -350,8 +355,8 @@ public class Framework { // Main class for everything
             }
 
 
-            FrontLeftMotor.setPower(0.5 * Direction);
-            FrontRightMotor.setPower(0.5 * Direction);
+            FrontLeftMotor.setPower(0.25 * Direction);
+            FrontRightMotor.setPower(0.25 * Direction);
 
             Sleep(Time);
 
@@ -397,9 +402,9 @@ public class Framework { // Main class for everything
 
 
                 FrontLeftMotor.setPower(-Speed * Direction);
-                BackLeftMotor.setPower(Speed * Direction);
+                BackLeftMotor.setPower(-Speed * Direction);
                 FrontRightMotor.setPower(Speed * Direction);
-                BackRightMotor.setPower(-Speed * Direction);
+                BackRightMotor.setPower(Speed * Direction);
                 Sleep(10);
             }
 
@@ -502,7 +507,7 @@ public class Framework { // Main class for everything
 
             Sleep(5000); // Wait 5 sec
 
-            Intake.setPower(1.0);
+            Intake.setPower(-1.0);
 
             Sleep(3000);
 

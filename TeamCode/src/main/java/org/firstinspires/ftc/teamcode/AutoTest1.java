@@ -16,7 +16,9 @@ public class AutoTest1 extends LinearOpMode {
 
         waitForStart();
 
-        Bot.AutoFramework.Move(50);
+        Bot.AutoFramework.Move(117);
+        Bot.AutoFramework.SetAngle(180.0,0.3);
+        Bot.AutoFramework.Shoot();
 
 
 

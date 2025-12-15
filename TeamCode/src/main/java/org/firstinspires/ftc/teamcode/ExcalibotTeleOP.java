@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-@TeleOp(name = "TeleOP (1.6)")
+@TeleOp(name = "TeleOP ⭐ (1.6)")
 public class ExcalibotTeleOP extends OpMode {
 
     final float SlowSpeed = 0.25f;
