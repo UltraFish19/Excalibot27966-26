@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import java.util.List;
 
-@Autonomous(name = "ExcalibotAuto ⭐")
+@Autonomous(name = "ExcalibotAuto  ⭐")
 public class ExcalibotAuto extends LinearOpMode {
 
 
@@ -15,9 +15,7 @@ public class ExcalibotAuto extends LinearOpMode {
 
     List<String> AutoList = List.of(
          "Basic go Straight",
-         "Score basket as BLUE",
-         "Score basket as RED",
-         "spin"
+         "Score Basket"
     );
 
     int AutoSelected = 0;
@@ -55,6 +53,24 @@ public class ExcalibotAuto extends LinearOpMode {
             }
         }
 
+
+        Bot.Init(hardwareMap,telemetry);
+
+        switch (AutoSelected){
+
+
+            case (0):
+                Bot.AutoFramework.Move(70,-0.3);
+                break;
+
+            case(1):
+
+                Bot.AutoFramework.Move(117,-0.3);
+                Bot.AutoFramework.Shoot();
+                Bot.AutoFramework.Move(50,-0.5);
+                break;
+
+        }
 
 
 

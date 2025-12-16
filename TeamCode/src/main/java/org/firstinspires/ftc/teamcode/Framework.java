@@ -56,6 +56,8 @@ public class Framework { // Main class for everything
     Telemetry.Item EncoderValueMessage;
     Telemetry.Item BasketRange;
 
+    Double Range;
+
 
 
 
@@ -295,13 +297,18 @@ public class Framework { // Main class for everything
 
         if (TagRange == -1){
             BasketRange.setValue("No tag detected!");
-
+            Range = null;
         } else if (TagRange == -2) {
             BasketRange.setValue("Multiple tags detected!");
+            Range = null;
         } else if (TagRange == -4) {
+
             BasketRange.setValue("Can't fully decode tag, please align the camera more!");
+            Range = null;
         } else {
-            BasketRange.setValue(String.valueOf(TagRange) + "CM");
+            Range = TagRange;
+            BasketRange.setValue(String.valueOf(Range) + "CM");
+
         }
 
 
@@ -432,7 +439,7 @@ public class Framework { // Main class for everything
         }
 
 
-        public void Move(float Distance) {
+        public void Move(float Distance,double Speed) {
         /*
         Set the robot's distance to a value (In cm)
          */
@@ -442,10 +449,10 @@ public class Framework { // Main class for everything
             double Ticks = Distance * TicksPerCM;
 
             while (Math.abs(BackLeftMotor.getCurrentPosition()) <= Ticks ) {
-                FrontLeftMotor.setPower(0.5);
-                FrontRightMotor.setPower(0.5);
-                BackLeftMotor.setPower(0.5);
-                BackRightMotor.setPower(0.5);
+                FrontLeftMotor.setPower(Speed);
+                FrontRightMotor.setPower(Speed);
+                BackLeftMotor.setPower(Speed);
+                BackRightMotor.setPower(Speed);
 
                 Sleep(10);
             }

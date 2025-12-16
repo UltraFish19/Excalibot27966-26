@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -10,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-@TeleOp(name = "TeleOP ⭐ (1.6)")
+@TeleOp(name = "TeleOP ⭐ (1.7)")
 public class ExcalibotTeleOP extends OpMode {
 
     final float SlowSpeed = 0.25f;
@@ -20,6 +22,9 @@ public class ExcalibotTeleOP extends OpMode {
     List<Float> FrontRightMotorOutputs;
     List<Float> BackLeftMotorOutputs;
     List<Float> BackRightMotorOutputs;
+
+    boolean RangeAlignment = false;
+
 
     @Override
     public void init() {
@@ -82,6 +87,8 @@ public class ExcalibotTeleOP extends OpMode {
         } else{
             Bot.Shooter.setPower(0);
         }
+
+
     }
 
     private void DriveTrainLoop() {
@@ -98,10 +105,12 @@ public class ExcalibotTeleOP extends OpMode {
             );
 
             Move(Power,"Straight");
+
         }
 
         if (gamepad1.left_stick_x !=0) {
             Move(gamepad1.left_stick_x,"Crabwalk");
+
         }
 
         if (gamepad1.right_stick_x != 0) {
@@ -114,6 +123,7 @@ public class ExcalibotTeleOP extends OpMode {
                 );
 
                 Move(Power,"Rotate");
+
             }
         }
 
@@ -122,15 +132,31 @@ public class ExcalibotTeleOP extends OpMode {
 
         } else if (gamepad1.dpad_left) {
             Move(-SlowSpeed,"Crabwalk");
+
         }
 
         if (gamepad1.dpad_up) {
             Move(-SlowSpeed,"Straight");
+
         } else if (gamepad1.dpad_down) {
             Move(SlowSpeed,"Straight");
 
 
+
+
+
         }
+
+//        if (gamepad1.a){
+//            if (Bot.Range != null) {
+//
+//                if (Bot.Range > Bot.SweetSpot + Bot.SweetSpotTolerance) {
+//                    Move(SlowSpeed, "Straight");
+//                } else if (Bot.Range < Bot.SweetSpot - Bot.SweetSpotTolerance) {
+//                    Move(-SlowSpeed, "Straight");
+//                }
+//            }
+//        }
 
 
         Bot.FrontLeftMotor.setPower(JavaUtil.averageOfList(FrontLeftMotorOutputs));
