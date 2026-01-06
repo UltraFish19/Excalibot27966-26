@@ -74,9 +74,9 @@ public class Framework { // Main class for everything
 
 
     public static class MotorParams{
-        public static DriveTrainParams  StraightParams = new DriveTrainParams(-1,-1,-1,-1);
-        public static DriveTrainParams RotateParams = new DriveTrainParams(1,-1,1,-1);
-        public static DriveTrainParams CrabwalkParams = new DriveTrainParams(1,-1,-1,1);
+        public static DriveTrainParams  StraightParams = new DriveTrainParams(1,1,1,1);
+        public static DriveTrainParams RotateParams = new DriveTrainParams(-1,1,-1,1);
+        public static DriveTrainParams CrabwalkParams = new DriveTrainParams(-1,1,1,-1);
     }
 
 
@@ -123,10 +123,10 @@ public class Framework { // Main class for everything
 
         IMUSensor = Hardware.get(IMU.class, "imu");
 
-        FrontLeftMotor.setDirection(DcMotor.Direction.REVERSE); //Set Directions
-        FrontRightMotor.setDirection(DcMotor.Direction.FORWARD);
-        BackLeftMotor.setDirection(DcMotor.Direction.REVERSE);
-        BackRightMotor.setDirection(DcMotor.Direction.FORWARD);
+        FrontLeftMotor.setDirection(DcMotor.Direction.FORWARD); //Set Directions
+        FrontRightMotor.setDirection(DcMotor.Direction.REVERSE);
+        BackLeftMotor.setDirection(DcMotor.Direction.FORWARD);
+        BackRightMotor.setDirection(DcMotor.Direction.REVERSE);
 
 
 
