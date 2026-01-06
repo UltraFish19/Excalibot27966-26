@@ -8,39 +8,45 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 @TeleOp(name = "EncoderFinder", group = "Utils")
 public class GetEncoderVals extends OpMode {
 
-    // Define the four motors
-    private DcMotor frontLeft;
-    private DcMotor backLeft;
-    private DcMotor frontRight;
-    private DcMotor backRight;
+    private DcMotor frontLeft, backLeft, frontRight, backRight;
 
     @Override
     public void init() {
-        // Initialize motors from the hardware map
         frontLeft = hardwareMap.get(DcMotor.class, "FrontLeftMotor");
         backLeft = hardwareMap.get(DcMotor.class, "BackLeftMotor");
         frontRight = hardwareMap.get(DcMotor.class, "FrontRightMotor");
         backRight = hardwareMap.get(DcMotor.class, "BackRightMotor");
 
-        // Set directions as requested
         frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         frontRight.setDirection(DcMotorSimple.Direction.FORWARD);
         backRight.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        // Tell the drivers the robot is ready
-        telemetry.addData("Status", "Initialized. Encoders ready.");
+        telemetry.addData("Status", "Initialized. Press Play to reset encoders.");
+    }
+
+    /* This runs once when you press the PLAY button */
+    @Override
+    public void start() {
+        // Reset encoders to zero
+        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        // Set motors back to run mode so they can move/be read
+        frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     @Override
     public void loop() {
-        // Retrieve and display encoder values
-        telemetry.addData("Front Left Encoder", frontLeft.getCurrentPosition());
-        telemetry.addData("Back Left Encoder", backLeft.getCurrentPosition());
-        telemetry.addData("Front Right Encoder", frontRight.getCurrentPosition());
-        telemetry.addData("Back Right Encoder", backRight.getCurrentPosition());
-
-        // Update the telemetry screen
+        telemetry.addData("Front Left", frontLeft.getCurrentPosition());
+        telemetry.addData("Back Left", backLeft.getCurrentPosition());
+        telemetry.addData("Front Right", frontRight.getCurrentPosition());
+        telemetry.addData("Back Right", backRight.getCurrentPosition());
         telemetry.update();
     }
 }
