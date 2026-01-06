@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 
-@TeleOp(name = "Rotation Calibrator")
+@TeleOp(name = "Rotation Calibrator", group = "Utils")
 public class RotationGetter extends OpMode {
 
     DcMotor Motor;

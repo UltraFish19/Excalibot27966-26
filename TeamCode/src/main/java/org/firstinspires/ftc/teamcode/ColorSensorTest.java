@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 
-@TeleOp(name = "Color Sensor Test")
+@TeleOp(name = "Color Sensor Test",group="Utils")
 public class ColorSensorTest extends OpMode {
 
 
