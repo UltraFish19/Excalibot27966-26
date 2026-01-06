@@ -1,9 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
 
+import android.graphics.Color;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import java.util.List;
 
@@ -38,6 +41,8 @@ public class ExcalibotAuto extends LinearOpMode {
     public void runOpMode() {
 
 
+
+
         boolean CycleButtonPressed = false;
         while (opModeInInit()){ // wait until the auto is initialized
             if (gamepad1.a) {
@@ -55,6 +60,7 @@ public class ExcalibotAuto extends LinearOpMode {
 
 
         Bot.Init(hardwareMap,telemetry);
+        Bot.SetIndicatorLight(Color.RED);
 
         switch (AutoSelected){
 

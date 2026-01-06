@@ -9,6 +9,7 @@ package org.firstinspires.ftc.teamcode;
 
 import android.util.Size;
 
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -24,8 +25,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles; /
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
-
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class Framework { // Main class for everything
@@ -42,6 +43,7 @@ public class Framework { // Main class for everything
     public DcMotor Intake; // Intake to take balls in
     public DcMotorEx Shooter;  //To shoot the ball
     public HardwareMap Hardware;
+    List<LynxModule> ConnectedHubs;
 
     IMU.Parameters IMUParameters;
     Telemetry BotConsole;
@@ -139,8 +141,7 @@ public class Framework { // Main class for everything
 
 
         ResetEncoder();
-
-
+        ConnectedHubs = Hardware.getAll(LynxModule.class);
         Log("Init successful!");
 
         SetupIMU(); // Setup Orientation Sensor
@@ -188,7 +189,11 @@ public class Framework { // Main class for everything
         double Pitch;
     }
 
-
+    public void SetIndicatorLight(int Color) {
+        for (LynxModule Hub : ConnectedHubs) {
+            Hub.setConstant(Color);
+        }
+    }
     private void SetupIMU() {
 
 
@@ -231,7 +236,7 @@ public class Framework { // Main class for everything
 
 
     public void Log(String Message) {
-
+        System.out.println(Message); // Print to log cat
         BotConsole.addLine(Message);
         BotConsole.update(); // Update so it actually appears
 

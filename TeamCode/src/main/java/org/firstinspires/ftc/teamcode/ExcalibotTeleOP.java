@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.graphics.Color;
 import android.util.Log;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
@@ -32,6 +34,8 @@ public class ExcalibotTeleOP extends OpMode {
         Bot.Init(hardwareMap, telemetry); // The Framework needs to get sent the 2 params because it doesn't have any access to them by default
         Bot.SetupCamera();
         TelemetryTimer = new ElapsedTime();
+        Bot.SetIndicatorLight(Color.DKGRAY);
+
 
 
     }
