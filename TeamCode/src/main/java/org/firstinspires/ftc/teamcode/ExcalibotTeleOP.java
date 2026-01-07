@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
 import android.graphics.Color;
-import android.util.Log;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -9,12 +8,13 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
+import org.firstinspires.ftc.teamcode.Utils.DriveTrainParams;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-@TeleOp(name = "TeleOP ⭐ (1.7)")
+@TeleOp(name = "TeleOP ⭐ (1.81)")
 public class ExcalibotTeleOP extends OpMode {
 
     final float SlowSpeed = 0.25f;
@@ -25,7 +25,7 @@ public class ExcalibotTeleOP extends OpMode {
     List<Float> BackLeftMotorOutputs;
     List<Float> BackRightMotorOutputs;
 
-    boolean RangeAlignment = false;
+
 
 
     @Override
@@ -35,6 +35,8 @@ public class ExcalibotTeleOP extends OpMode {
         Bot.SetupCamera();
         TelemetryTimer = new ElapsedTime();
         Bot.SetIndicatorLight(Color.DKGRAY);
+
+
 
 
 
@@ -76,12 +78,22 @@ public class ExcalibotTeleOP extends OpMode {
 
 
     private void AdditionalMotorLoop() {
+
         if (gamepad1.right_bumper) {
             Bot.Intake.setPower(-1.0);
+            Bot.Intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         } else if (gamepad1.left_bumper) {
             Bot.Intake.setPower(1.0);
+            Bot.Intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         } else {
-            Bot.Intake.setPower(0);
+
+                Bot.AlignIntake();
+                Bot.Intake.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                Bot.Intake.setPower(1);
+
+
+
         }
 
         if (gamepad1.right_trigger > 0){

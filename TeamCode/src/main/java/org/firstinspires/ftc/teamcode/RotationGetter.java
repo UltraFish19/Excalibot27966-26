@@ -19,7 +19,8 @@ public class RotationGetter extends OpMode {
 
     @Override
     public void init() {
-        Motor = hardwareMap.get(DcMotor.class, "Shooter");
+        Motor = hardwareMap.get(DcMotor.class, "Intake");
+        Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 

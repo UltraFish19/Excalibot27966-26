@@ -1,11 +1,11 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Utils;
 
 public class DriveTrainParams{
 
-    int FrontLeft;
-    int FrontRight;
-    int BackLeft;
-    int BackRight;
+    public int FrontLeft;
+    public int FrontRight;
+    public int BackLeft;
+    public int BackRight;
 
     public DriveTrainParams(int FrontLeft,int FrontRight,int BackLeft,int BackRight){
         this.FrontLeft = FrontLeft;

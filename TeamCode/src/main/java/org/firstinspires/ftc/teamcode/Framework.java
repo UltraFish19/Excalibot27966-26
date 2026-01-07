@@ -7,6 +7,7 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import android.graphics.Color;
 import android.util.Size;
 
 import com.qualcomm.hardware.lynx.LynxModule;
@@ -18,15 +19,18 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles; //Import everything
+import org.firstinspires.ftc.teamcode.Utils.DriveTrainParams;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import java.util.ArrayList;
 import java.util.List;
+import org.firstinspires.ftc.teamcode.Utils.FixedSizeList;
 
 
 public class Framework { // Main class for everything
@@ -55,8 +59,10 @@ public class Framework { // Main class for everything
     Telemetry.Item OrienYaw;
     Telemetry.Item OrienRoll;
     Telemetry.Item OrienPitch;
-    Telemetry.Item EncoderValueMessage;
+    Telemetry.Item ShooterRPMMessage;
     Telemetry.Item BasketRange;
+
+    FixedSizeList<Double> ShooterRPMVals = new FixedSizeList<>(5); // The number inputted is the amount of data that will be used to average the values
 
     Double Range;
 
@@ -65,6 +71,7 @@ public class Framework { // Main class for everything
 
     final float WheelDiameter = 31.42f; // In cm
     final float TicksPerRotation = 537.6f;
+    final float TicksPerIntakeHalfRotation =  537.6f / 2;
     final float ShooterTicksPerRotation = 117;
     final double TicksPerCM = TicksPerRotation / WheelDiameter;
 
@@ -72,11 +79,8 @@ public class Framework { // Main class for everything
     final double SweetSpotTolerance = 0.2;
 
 
-
-
-
     public static class MotorParams{
-        public static DriveTrainParams  StraightParams = new DriveTrainParams(1,1,1,1);
+        public static DriveTrainParams StraightParams = new DriveTrainParams(1,1,1,1);
         public static DriveTrainParams RotateParams = new DriveTrainParams(-1,1,-1,1);
         public static DriveTrainParams CrabwalkParams = new DriveTrainParams(-1,1,1,-1);
     }
@@ -150,7 +154,7 @@ public class Framework { // Main class for everything
         OrienYaw = Telemetry.addData("Yaw", 0.0);
         OrienRoll = Telemetry.addData("Roll", 0.0);
         OrienPitch = Telemetry.addData("Pitch", 0.0);
-        EncoderValueMessage = Telemetry.addData("Shooter Speed",0.0);
+        ShooterRPMMessage = Telemetry.addData("Shooter Speed","0.0");
         BasketRange = Telemetry.addData("Range: ", "Unknown, Tag not detected!");
 
     }
@@ -182,6 +186,9 @@ public class Framework { // Main class for everything
 
     }
 
+    public boolean ValueInTolerance(double Target, double Actual, double Tolerance) {
+        return Math.abs(Target - Actual) <= Tolerance;
+    }
 
     public static class IMUAngle {
         double Yaw;
@@ -193,6 +200,24 @@ public class Framework { // Main class for everything
         for (LynxModule Hub : ConnectedHubs) {
             Hub.setConstant(Color);
         }
+    }
+
+
+    public void AlignIntake(){ // This function will align the intake so it can be easier to shoot 2 balls
+        int IntakePos = Intake.getCurrentPosition();
+
+        float IntakeRotations = IntakePos / TicksPerIntakeHalfRotation;
+
+        IntakeRotations = Math.round(IntakeRotations);
+
+
+        Intake.setTargetPosition((int) (IntakeRotations * TicksPerIntakeHalfRotation));
+
+
+
+
+
+
     }
     private void SetupIMU() {
 
@@ -241,6 +266,7 @@ public class Framework { // Main class for everything
         BotConsole.update(); // Update so it actually appears
 
     }
+
 
 
     public void Sleep(int Millis) {
@@ -296,7 +322,19 @@ public class Framework { // Main class for everything
         OrienYaw.setValue(CurrentAngle.Yaw);
         OrienRoll.setValue(CurrentAngle.Roll);
         OrienPitch.setValue(CurrentAngle.Pitch);
-        EncoderValueMessage.setValue((Shooter.getVelocity() / 117) * 60);
+        double ShooterRPM = (Shooter.getVelocity() / 117) * 60;
+        ShooterRPMVals.add(ShooterRPM);
+        double AverageRPM = JavaUtil.averageOfList(ShooterRPMVals);
+        ShooterRPMMessage.setValue("Avg: " + String.valueOf(AverageRPM) + "Current: " + String.valueOf(ShooterRPM));
+
+        if (ValueInTolerance(AverageRPM, 1200, 75)){
+            SetIndicatorLight(Color.MAGENTA);
+        } else {
+            SetIndicatorLight(Color.DKGRAY);
+        }
+
+
+
 
         double TagRange = GetRange();
 
@@ -444,6 +482,8 @@ public class Framework { // Main class for everything
         }
 
 
+
+
         public void Move(float Distance,double Speed) {
         /*
         Set the robot's distance to a value (In cm)
@@ -528,13 +568,4 @@ public class Framework { // Main class for everything
         }
 
     }
-
-
 }
- 
-
-    
-    
-
-
-    
