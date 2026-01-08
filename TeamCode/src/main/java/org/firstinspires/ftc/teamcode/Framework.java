@@ -361,12 +361,18 @@ public class Framework { // Main class for everything
 
         if (ValueInTolerance(AverageRPM, 1200, 75)){
                 SetIndicatorLight(Color.MAGENTA);
-        } else if (Range != null && ValueInTolerance(Range, SweetSpot, SweetSpotTolerance)) {
-            SetIndicatorLight(Color.RED);
+        } else if (Range != null) {
+
+            if (ValueInTolerance(Range, SweetSpot, SweetSpotTolerance))
+                SetIndicatorLight(Color.RED);
+            else {
+                SetIndicatorLight(Color.CYAN);
+            }
+
         }
 
         else {
-            SetIndicatorLight(Color.DKGRAY);
+            SetIndicatorLight(0x90EE90);
         }
 
 
