@@ -12,6 +12,7 @@ import android.util.Size;
 
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.hardware.Blinker;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -29,7 +30,11 @@ import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import java.util.ArrayList;
+import java.util.Collection;
+
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import org.firstinspires.ftc.teamcode.Utils.FixedSizeList;
 
 
@@ -76,7 +81,7 @@ public class Framework { // Main class for everything
     final double TicksPerCM = TicksPerRotation / WheelDiameter;
 
     final double SweetSpot = 132;
-    final double SweetSpotTolerance = 0.2;
+    final double SweetSpotTolerance = 4;
 
 
     public static class MotorParams{
@@ -106,6 +111,9 @@ public class Framework { // Main class for everything
 
     }
 
+
+
+
     public void Init(HardwareMap Hardware, Telemetry Telemetry) { // Will be used in Auto and TeleOp
 
 
@@ -120,7 +128,8 @@ public class Framework { // Main class for everything
 
         Intake = Hardware.get(DcMotor.class,"Intake");
         Intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        Intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); // We do not need a motor for something that spins mindlessly
+        Intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         Shooter = Hardware.get(DcMotorEx.class,"Shooter");
         Shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
@@ -201,6 +210,8 @@ public class Framework { // Main class for everything
             Hub.setConstant(Color);
         }
     }
+
+
 
 
     public void AlignIntake(){ // This function will align the intake so it can be easier to shoot 2 balls
@@ -312,7 +323,6 @@ public class Framework { // Main class for everything
     }
 
 
-
     public void UpdateData() {
 
 
@@ -326,12 +336,6 @@ public class Framework { // Main class for everything
         ShooterRPMVals.add(ShooterRPM);
         double AverageRPM = JavaUtil.averageOfList(ShooterRPMVals);
         ShooterRPMMessage.setValue("Avg: " + String.valueOf(AverageRPM) + "Current: " + String.valueOf(ShooterRPM));
-
-        if (ValueInTolerance(AverageRPM, 1200, 75)){
-            SetIndicatorLight(Color.MAGENTA);
-        } else {
-            SetIndicatorLight(Color.DKGRAY);
-        }
 
 
 
@@ -353,6 +357,18 @@ public class Framework { // Main class for everything
             BasketRange.setValue(String.valueOf(Range) + "CM");
 
         }
+
+
+        if (ValueInTolerance(AverageRPM, 1200, 75)){
+                SetIndicatorLight(Color.MAGENTA);
+        } else if (Range != null && ValueInTolerance(Range, SweetSpot, SweetSpotTolerance)) {
+            SetIndicatorLight(Color.RED);
+        }
+
+        else {
+            SetIndicatorLight(Color.DKGRAY);
+        }
+
 
 
 

@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-@TeleOp(name = "TeleOP ⭐ (1.81)")
+@TeleOp(name = "TeleOP ⭐ (1.82)")
 public class ExcalibotTeleOP extends OpMode {
 
     final float SlowSpeed = 0.25f;
@@ -79,9 +79,13 @@ public class ExcalibotTeleOP extends OpMode {
 
     private void AdditionalMotorLoop() {
 
-        if (gamepad1.right_bumper) {
+        if (gamepad1.right_bumper) { // Suck balls in
             Bot.Intake.setPower(-1.0);
             Bot.Intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            if (gamepad1.right_trigger == 0){
+                Bot.Shooter.setPower(-0.4);
+            }
 
         } else if (gamepad1.left_bumper) {
             Bot.Intake.setPower(1.0);
