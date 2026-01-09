@@ -5,25 +5,19 @@ import android.graphics.Color;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.JavaUtil;
-import org.firstinspires.ftc.teamcode.Utils.DriveTrainParams;
-
 import java.util.ArrayList;
-import java.util.List;
 
 
-@TeleOp(name = "TeleOP ⭐ (1.82)")
+@TeleOp(name = "TeleOP ⭐ (1.83)")
 public class ExcalibotTeleOP extends OpMode {
 
-    final float SlowSpeed = 0.25f;
+    final float SlowSpeed = 0.4f;
     Framework Bot = new Framework();
     ElapsedTime TelemetryTimer;
-    List<Float> FrontLeftMotorOutputs;
-    List<Float> FrontRightMotorOutputs;
-    List<Float> BackLeftMotorOutputs;
-    List<Float> BackRightMotorOutputs;
+
 
 
 
@@ -44,35 +38,13 @@ public class ExcalibotTeleOP extends OpMode {
 
 
 
-    private void Move(float Speed, String Action) {
-        DriveTrainParams MotorParameter; // The correct directions of the motors
-
-        switch (Action) {
-            case "Straight":
-                MotorParameter = Framework.MotorParams.StraightParams;
-                break;
-
-            case "Rotate":
-                MotorParameter = Framework.MotorParams.RotateParams;
-                break;
-
-            case "Crabwalk":
-                MotorParameter = Framework.MotorParams.CrabwalkParams;
-                break;
-
-            default:
-                throw new RuntimeException("Invalid Movement Action for drive train.");
-
-        }
-
-        FrontLeftMotorOutputs.add(Speed * MotorParameter.FrontLeft);
-        FrontRightMotorOutputs.add(Speed * MotorParameter.FrontRight);
-        BackLeftMotorOutputs.add(Speed * MotorParameter.BackLeft);
-        BackRightMotorOutputs.add(Speed * MotorParameter.BackRight);
 
 
 
-    }
+
+
+
+
 
 
 
@@ -101,7 +73,7 @@ public class ExcalibotTeleOP extends OpMode {
         }
 
         if (gamepad1.right_trigger > 0){
-         Bot.Shooter.setVelocity((1200 / 60) * Bot.ShooterTicksPerRotation);
+         Bot.Shooter.setVelocity((Framework.FlywheelRPM / 60) * Bot.ShooterTicksPerRotation);
     }   else if (gamepad1.left_trigger > 0) {
         Bot.Shooter.setPower(-(gamepad1.left_trigger / 2.0));
         } else{
@@ -113,10 +85,10 @@ public class ExcalibotTeleOP extends OpMode {
 
     private void DriveTrainLoop() {
 
-        FrontLeftMotorOutputs = new ArrayList<>();
-        FrontRightMotorOutputs = new ArrayList<>();
-        BackLeftMotorOutputs = new ArrayList<>();
-        BackRightMotorOutputs = new ArrayList<>();
+
+
+
+        Bot.ResetDriveTrainMotors();
 
         if (gamepad1.left_stick_y != 0) { // Forward
             float Power = (float) Math.copySign(
@@ -124,12 +96,12 @@ public class ExcalibotTeleOP extends OpMode {
                     gamepad1.left_stick_y
             );
 
-            Move(Power,"Straight");
+            Bot.Move(Power,Framework.MoveDirection.STRAIGHT);
 
         }
 
         if (gamepad1.left_stick_x !=0) {
-            Move(gamepad1.left_stick_x,"Crabwalk");
+            Bot.Move(gamepad1.left_stick_x,Framework.MoveDirection.CRABWALK);
 
         }
 
@@ -142,47 +114,56 @@ public class ExcalibotTeleOP extends OpMode {
                         gamepad1.right_stick_x // Uses the sign of the inverted input
                 );
 
-                Move(Power,"Rotate");
+                Bot.Move(Power,Framework.MoveDirection.ROTATE);
 
             }
         }
 
         if (gamepad1.dpad_right) { // Slow Crab walking
-            Move(SlowSpeed,"Crabwalk");
+            Bot.Move(SlowSpeed,Framework.MoveDirection.CRABWALK);
 
         } else if (gamepad1.dpad_left) {
-            Move(-SlowSpeed,"Crabwalk");
+            Bot.Move(-SlowSpeed,Framework.MoveDirection.CRABWALK);
 
         }
 
         if (gamepad1.dpad_up) {
-            Move(-SlowSpeed,"Straight");
+            Bot.Move(-SlowSpeed,Framework.MoveDirection.STRAIGHT);
 
         } else if (gamepad1.dpad_down) {
-            Move(SlowSpeed,"Straight");
+            Bot.Move(SlowSpeed, Framework.MoveDirection.STRAIGHT);
+        }
 
+        System.out.println(gamepad1.x);
 
+        if (gamepad1.x){
 
-
+            Bot.Move(-SlowSpeed / 2 ,Framework.MoveDirection.ROTATE);
+        }  else  if (gamepad1.b){
+            Bot.Move(SlowSpeed / 2,Framework.MoveDirection.ROTATE);
 
         }
 
-//        if (gamepad1.a){
-//            if (Bot.Range != null) {
-//
-//                if (Bot.Range > Bot.SweetSpot + Bot.SweetSpotTolerance) {
-//                    Move(SlowSpeed, "Straight");
-//                } else if (Bot.Range < Bot.SweetSpot - Bot.SweetSpotTolerance) {
-//                    Move(-SlowSpeed, "Straight");
-//                }
-//            }
-//        }
 
 
-        Bot.FrontLeftMotor.setPower(JavaUtil.averageOfList(FrontLeftMotorOutputs));
-        Bot.FrontRightMotor.setPower(JavaUtil.averageOfList(FrontRightMotorOutputs));
-        Bot.BackLeftMotor.setPower(JavaUtil.averageOfList(BackLeftMotorOutputs));
-        Bot.BackRightMotor.setPower(JavaUtil.averageOfList(BackRightMotorOutputs));
+
+
+
+        if (gamepad1.y){
+
+                if ( Bot.Range == null ) {
+                    Bot.Move(SlowSpeed, Framework.MoveDirection.STRAIGHT); // Too far
+
+                } else if (Bot.Range > Bot.SweetSpot + Bot.SweetSpotTolerance) {
+                        Bot.Move(-SlowSpeed, Framework.MoveDirection.STRAIGHT); // Too far
+                } else if (Bot.Range < Bot.SweetSpot - Bot.SweetSpotTolerance) {
+                    Bot.Move(SlowSpeed, Framework.MoveDirection.STRAIGHT); // close
+                }
+
+        }
+
+
+        Bot.UpdateDriveTrainMotors();
 
     }
 

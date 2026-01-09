@@ -12,13 +12,11 @@ import android.util.Size;
 
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.robotcore.hardware.Blinker;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -30,10 +28,8 @@ import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import java.util.ArrayList;
-import java.util.Collection;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.firstinspires.ftc.teamcode.Utils.FixedSizeList;
 
@@ -83,11 +79,20 @@ public class Framework { // Main class for everything
     final double SweetSpot = 132;
     final double SweetSpotTolerance = 4;
 
+    final static float FlywheelRPM = 1200;
+
+
 
     public static class MotorParams{
         public static DriveTrainParams StraightParams = new DriveTrainParams(1,1,1,1);
         public static DriveTrainParams RotateParams = new DriveTrainParams(-1,1,-1,1);
         public static DriveTrainParams CrabwalkParams = new DriveTrainParams(-1,1,1,-1);
+    }
+
+    public static class MoveDirection{
+        static byte STRAIGHT = 1;
+        static byte ROTATE = 2;
+        static byte CRABWALK = 3;
     }
 
 
@@ -142,6 +147,11 @@ public class Framework { // Main class for everything
         FrontRightMotor.setDirection(DcMotor.Direction.REVERSE);
         BackLeftMotor.setDirection(DcMotor.Direction.FORWARD);
         BackRightMotor.setDirection(DcMotor.Direction.REVERSE);
+
+        FrontLeftMotorOutputs = new ArrayList<>();
+        FrontRightMotorOutputs = new ArrayList<>();
+        BackLeftMotorOutputs = new ArrayList<>();
+        BackRightMotorOutputs = new ArrayList<>();
 
 
 
@@ -335,7 +345,7 @@ public class Framework { // Main class for everything
         double ShooterRPM = (Shooter.getVelocity() / 117) * 60;
         ShooterRPMVals.add(ShooterRPM);
         double AverageRPM = JavaUtil.averageOfList(ShooterRPMVals);
-        ShooterRPMMessage.setValue("Avg: " + String.valueOf(AverageRPM) + "Current: " + String.valueOf(ShooterRPM));
+        ShooterRPMMessage.setValue("Avg: " + AverageRPM + "Current: " + ShooterRPM);
 
 
 
@@ -354,12 +364,12 @@ public class Framework { // Main class for everything
             Range = null;
         } else {
             Range = TagRange;
-            BasketRange.setValue(String.valueOf(Range) + "CM");
+            BasketRange.setValue(Range + "CM");
 
         }
 
 
-        if (ValueInTolerance(AverageRPM, 1200, 75)){
+        if (ValueInTolerance(AverageRPM, FlywheelRPM, 75)){
                 SetIndicatorLight(Color.MAGENTA);
         } else if (Range != null) {
 
@@ -382,60 +392,62 @@ public class Framework { // Main class for everything
     }
 
 
-    public Auto AutoFramework = new Auto();
+    List<Float> FrontLeftMotorOutputs;
+    List<Float> FrontRightMotorOutputs;
+    List<Float> BackLeftMotorOutputs;
+    List<Float> BackRightMotorOutputs;
 
-    public class Auto {
+    public void Move(float Speed, byte Action) {
+        DriveTrainParams MotorParameter; // The correct directions of the motors
 
+        switch (Action) {
+            case 1:
+                MotorParameter = MotorParams.StraightParams;
+                break;
 
-        @Deprecated
-        public void Turn(int Time, boolean Right) { // (2 Secs = 90 Degrees) = WRONG
+            case 2:
+                MotorParameter = MotorParams.RotateParams;
+                break;
 
-            byte RightDirection;
-            byte LeftDirection;
+            case 3:
+                MotorParameter = MotorParams.CrabwalkParams;
+                break;
 
-
-            if (Right) {
-                RightDirection = -1;
-                LeftDirection = 1;
-            } else {
-                RightDirection = 1;
-                LeftDirection = -1;
-            }
-
-
-            FrontLeftMotor.setPower(0.5 * LeftDirection);
-            FrontRightMotor.setPower(0.5 * RightDirection);
-
-            Sleep(Time);
-
-            FrontLeftMotor.setPower(0);
-            FrontRightMotor.setPower(0);
-
-
+            default:
+                throw new RuntimeException("Invalid Movement Action for drive train.");
         }
+        FrontLeftMotorOutputs.add(Speed * MotorParameter.FrontLeft);
+        FrontRightMotorOutputs.add(Speed * MotorParameter.FrontRight);
+        BackLeftMotorOutputs.add(Speed * MotorParameter.BackLeft);
+        BackRightMotorOutputs.add(Speed * MotorParameter.BackRight);
 
-        @Deprecated
-        public void MoveStraight(int Time, boolean Forward) {
-
-            byte Direction; // Number between -255 and 255
-
-
-            if (Forward) {
-                Direction = 1;
-            } else {
-                Direction = -1;
-            }
+    }
 
 
-            FrontLeftMotor.setPower(0.25 * Direction);
-            FrontRightMotor.setPower(0.25 * Direction);
 
-            Sleep(Time);
+    public void ResetDriveTrainMotors(){
+        FrontLeftMotorOutputs = new ArrayList<>();
+        FrontRightMotorOutputs = new ArrayList<>();
+        BackLeftMotorOutputs = new ArrayList<>();
+        BackRightMotorOutputs = new ArrayList<>();
+    }
 
-            FrontLeftMotor.setPower(0);
-            FrontRightMotor.setPower(0);
 
-        }
+
+    public void UpdateDriveTrainMotors(){
+        FrontLeftMotor.setPower(JavaUtil.averageOfList(FrontLeftMotorOutputs));
+        FrontRightMotor.setPower(JavaUtil.averageOfList(FrontRightMotorOutputs));
+        BackLeftMotor.setPower(JavaUtil.averageOfList(BackLeftMotorOutputs));
+        BackRightMotor.setPower(JavaUtil.averageOfList(BackRightMotorOutputs));
+    }
+
+    public AutoFramework Auto = new AutoFramework();
+
+    public class AutoFramework {
+
+
+        private AutoFramework() {} // Prevent it from appearing outside of this.
+
 
         private int NormalizeAngle(int Angle) {
             Angle = Angle % 360;
@@ -452,7 +464,6 @@ public class Framework { // Main class for everything
 
 
         public void SetAngle(int SetAngleTo, Boolean Left,Double Speed) {
-            ElapsedTime UpdateDataTimer = new ElapsedTime();
 
             if (Left == null) {
                 Left = true;
@@ -480,7 +491,7 @@ public class Framework { // Main class for everything
                 Sleep(10);
             }
 
-            Log("Turned " + Integer.toString(SetAngleTo) + " Degrees");
+            Log("Turned " + SetAngleTo + " Degrees");
             FrontLeftMotor.setPower(0);
             BackLeftMotor.setPower(0);
             FrontRightMotor.setPower(0);
@@ -490,49 +501,42 @@ public class Framework { // Main class for everything
         }
 
 
-        public double GetShooterMotorRPM(){
-
-            double OriginalPos = Shooter.getCurrentPosition();
-
-            Sleep(100);
-
-            double Delta = OriginalPos - Shooter.getCurrentPosition();
-
-            double RPS = (Delta * 10) / ShooterTicksPerRotation;
-
-            return RPS * 60;
-        }
-
-
-
-
-        public void Move(float Distance,double Speed) {
+        public void MoveStraight(float Distance, float Speed) {
         /*
         Set the robot's distance to a value (In cm)
          */
 
             ResetEncoder();
 
+            Speed = Speed * -1; // For whatever fucking java reason, the motor spins in the opposite direction when using auto.
+
             double Ticks = Distance * TicksPerCM;
 
+            ResetDriveTrainMotors();
+
             while (Math.abs(BackLeftMotor.getCurrentPosition()) <= Ticks ) {
-                FrontLeftMotor.setPower(Speed);
-                FrontRightMotor.setPower(Speed);
-                BackLeftMotor.setPower(Speed);
-                BackRightMotor.setPower(Speed);
+                Move(Speed,MoveDirection.STRAIGHT);
+
+                UpdateDriveTrainMotors();
 
                 Sleep(10);
             }
 
-            FrontLeftMotor.setPower(0);
-            FrontRightMotor.setPower(0);
-            BackLeftMotor.setPower(0);
-            BackRightMotor.setPower(0);
 
-            Log("Moved " + Float.toString(Distance) + "cm");
+            ResetDriveTrainMotors();
+
+
+            Move(0,MoveDirection.STRAIGHT);
+
+            UpdateDriveTrainMotors();
+
+            Log("Moved " + Distance + "cm");
 
 
         }
+
+
+
 
 
 
@@ -570,23 +574,35 @@ public class Framework { // Main class for everything
             BackLeftMotor.setPower(0);
             BackRightMotor.setPower(0);
 
-            Log("Moved " + Float.toString(Distance) + "cm");
+            Log("Moved " + Distance + "cm");
 
 
         }
 
 
-        public void Shoot(){
-            Shooter.setPower(1.0);
+        public void Shoot(){ // This will shoot two balls
+            Shooter.setVelocity((Framework.FlywheelRPM / 60) * ShooterTicksPerRotation);
 
             Sleep(5000); // Wait 5 sec
 
             Intake.setPower(-1.0);
 
-            Sleep(3000);
+            Sleep(50);
 
             Intake.setPower(0);
-            Shooter.setPower(0);
+
+            Sleep(400);
+
+            Intake.setPower(-1.0);
+
+
+
+
+
+            Sleep(2000);
+
+            Intake.setPower(0);
+            Shooter.setVelocity(0);
         }
 
     }

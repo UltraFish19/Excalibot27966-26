@@ -5,12 +5,10 @@ import android.graphics.Color;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
 import java.util.List;
 
-@Autonomous(name = "ExcalibotAuto  ⭐")
+@Autonomous(name = "ExcalibotAuto (1.1)  ⭐")
 public class ExcalibotAuto extends LinearOpMode {
 
 
@@ -66,14 +64,14 @@ public class ExcalibotAuto extends LinearOpMode {
 
 
             case (0):
-                Bot.AutoFramework.Move(70,-0.3);
+                Bot.Auto.MoveStraight(70f,0.3f);
                 break;
 
             case(1):
 
-                Bot.AutoFramework.Move(117,-0.3);
-                Bot.AutoFramework.Shoot();
-                Bot.AutoFramework.Move(50,-0.5);
+                Bot.Auto.MoveStraight(117f,-0.3f);
+                Bot.Auto.Shoot();
+                Bot.Auto.MoveStraight(60f,-0.5f);
                 break;
 
         }
@@ -84,3 +82,5 @@ public class ExcalibotAuto extends LinearOpMode {
 
     }
 }
+
+
