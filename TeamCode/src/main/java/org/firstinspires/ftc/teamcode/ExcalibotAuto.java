@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import java.util.List;
 
-@Autonomous(name = "ExcalibotAuto (1.1)  ⭐")
+@Autonomous(name = "ExcalibotAuto (1.2)  ⭐")
 public class ExcalibotAuto extends LinearOpMode {
 
 
@@ -71,7 +71,7 @@ public class ExcalibotAuto extends LinearOpMode {
 
                 Bot.Auto.MoveStraight(117f,-0.3f);
                 Bot.Auto.Shoot();
-                Bot.Auto.MoveStraight(60f,-0.5f);
+                Bot.Auto.MoveStraight(70f,-0.5f);
                 break;
 
         }

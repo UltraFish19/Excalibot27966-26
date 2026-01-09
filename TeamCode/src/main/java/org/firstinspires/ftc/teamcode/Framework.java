@@ -599,10 +599,16 @@ public class Framework { // Main class for everything
 
 
 
-            Sleep(2000);
+            Sleep(4000);
 
-            Intake.setPower(0);
             Shooter.setVelocity(0);
+
+            AlignIntake();
+            Intake.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            Intake.setPower(1);
+            Sleep(1000);
+            Intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            Intake.setPower(0);
         }
 
     }
